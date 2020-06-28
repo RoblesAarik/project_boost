@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Rocket : MonoBehaviour
 {
+    [SerializeField] float rcsThrust = 240f;
+    [SerializeField] float mainThrust = 5f;
+    
     Rigidbody rigidBody;
     AudioSource audioSource;
 
@@ -16,13 +19,14 @@ public class Rocket : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
-        ProcessInput();
+    {   
+        Thruster();
+        Rotate();
     }
 
-    void ProcessInput() {
+    void Thruster() {
         if (Input.GetKey(KeyCode.Space)) {
-            rigidBody.AddRelativeForce(Vector3.up);
+            rigidBody.AddRelativeForce(Vector3.up * mainThrust);
             if(!audioSource.isPlaying) {
 
             audioSource.Play();
@@ -31,15 +35,41 @@ public class Rocket : MonoBehaviour
                 audioSource.Stop();
             }
         }
+    }
+
+    void Rotate() {
+
+        rigidBody.freezeRotation = true;  // Manual control of rotation
+        
+        
+        float rotationThisFrame = rcsThrust * Time.deltaTime;
 
         if (Input.GetKey(KeyCode.A)) {
-
-            transform.Rotate(Vector3.forward);
+            transform.Rotate(Vector3.forward * rotationThisFrame);
 
         } else if (Input.GetKey(KeyCode.D)) {
 
-            transform.Rotate(-Vector3.forward);
+            transform.Rotate(-Vector3.forward * rotationThisFrame);
 
         }
+
+       rigidBody.freezeRotation = false;
     }
+
+    void OnCollisionEnter(Collision collision) {
+        switch (collision.gameObject.tag) {
+            case "Friendly":
+                print("OK");
+            break;
+            
+            case "Fuel":
+                print("Fuel");
+            break;
+
+            default: 
+                print("Dead");
+            break;
+        }
+    }
+    
 }
