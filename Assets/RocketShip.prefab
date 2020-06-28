@@ -439,6 +439,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rcsThrust: 250
   mainThrust: 5
+  mainEngine: {fileID: 8300000, guid: 39afe64b7ef4a46bba76bf9c81b1db76, type: 3}
+  dyingSound: {fileID: 8300000, guid: e79933e989e174d56a03bacfa7209f3b, type: 3}
+  finishLevel: {fileID: 8300000, guid: 960d5bd20f470452aa85f1580175d8b2, type: 3}
 --- !u!82 &5773945296918941877
 AudioSource:
   m_ObjectHideFlags: 0
