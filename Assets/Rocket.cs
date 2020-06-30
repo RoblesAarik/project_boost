@@ -6,9 +6,18 @@ public class Rocket : MonoBehaviour
 {
     [SerializeField] float rcsThrust = 240f;
     [SerializeField] float mainThrust = 5f;
+    [SerializeField] float levelLoadDelay = 2f;
+
+
     [SerializeField] AudioClip mainEngine;
     [SerializeField] AudioClip dyingSound;
     [SerializeField] AudioClip finishLevel;
+    
+
+
+    [SerializeField] ParticleSystem mainEngineParticles;
+    [SerializeField] ParticleSystem dyingParticles;
+    [SerializeField] ParticleSystem finishLevelParticles;
     
 
     
@@ -42,16 +51,18 @@ public class Rocket : MonoBehaviour
 
             } else {
                 audioSource.Stop();
+                mainEngineParticles.Stop();
             }
         }
     
 
     void ApplyThruster() {
-        rigidBody.AddRelativeForce(Vector3.up * mainThrust);
+        rigidBody.AddRelativeForce(Vector3.up * mainThrust * Time.deltaTime);
             if(!audioSource.isPlaying) {
 
             audioSource.PlayOneShot(mainEngine);
     }
+        mainEngineParticles.Play();
     }
 
     void RespondToRotate() {
@@ -96,18 +107,28 @@ public class Rocket : MonoBehaviour
         state = State.Transcending;
         audioSource.Stop();
         audioSource.PlayOneShot(finishLevel);
-        Invoke("LoadNextScene", 1f);
+        finishLevelParticles.Play();
+        Invoke("LoadNextScene", levelLoadDelay);
     }
 
     void Death() {
         state = State.Dying;
         audioSource.Stop();
         audioSource.PlayOneShot(dyingSound);
-        Invoke("LoadFirstScene", 1f); 
+        dyingParticles.Play();
+        Invoke("LoadFirstScene", levelLoadDelay); 
     }
 
      void LoadNextScene() {
-        SceneManager.LoadScene(1);
+        int currrentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        int nextSceneIndex = currrentSceneIndex + 1;
+        
+        if (nextSceneIndex == SceneManager.sceneCountInBuildSettings) {
+            nextSceneIndex = 0;
+            SceneManager.LoadScene(nextSceneIndex);
+        } else {
+            SceneManager.LoadScene(nextSceneIndex);
+        }
     }
 
     void LoadFirstScene() {
